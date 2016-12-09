@@ -1,0 +1,26 @@
+@startuml
+title Diagramas de componentes\nSession Manager
+
+component "LegacyApp" as lap
+
+node sessManager #LightYellow {
+    [spring cluster 1] as sc1
+    [spring cluster 2] as sc2
+}
+database "redis1" as redis1 #LightBlue
+database "redis2" as redis2 #LightBlue
+
+[HA proxy\n(Balanceador de Carga)] as hap
+interface "REST jwt\n(HTTP)" as rest1
+interface "REST jwt\n(HTTP)" as rest2
+
+
+lap <-down-> hap : Http Request
+hap <-down-> rest1
+hap <-down-> rest2
+rest1 - sc1
+rest2 - sc2
+sc1 <-down-> redis1
+sc2 <-down-> redis2
+redis1 <.right.> redis2 : Sync. 
+@enduml
